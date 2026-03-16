@@ -1,65 +1,204 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+import { useState, useEffect } from "react"
+import { supabase } from "../lib/supabase"
+import { motion } from "framer-motion"
+import { Church } from "lucide-react"
+
+export default function HomePage() {
+
+const images = [
+"/images/church-s.jpg",
+"/images/s-stephen.jpg"
+]
+
+const [index,setIndex]=useState(0)
+const [rotation,setRotation]=useState(null)
+const [timeLeft,setTimeLeft]=useState("")
+
+// IMAGE SLIDE
+useEffect(()=>{
+
+const interval=setInterval(()=>{
+setIndex(prev => (prev+1)%images.length)
+},5000)
+
+return ()=>clearInterval(interval)
+
+},[])
+
+
+// PARALLAX EFFECT
+useEffect(()=>{
+
+const handleScroll=()=>{
+
+const offset=window.scrollY
+const bg=document.getElementById("parallax")
+
+if(bg){
+bg.style.transform=`translateY(${offset*0.3}px)`
+}
+
+}
+
+window.addEventListener("scroll",handleScroll)
+
+return ()=>window.removeEventListener("scroll",handleScroll)
+
+},[])
+
+
+// LOAD ROTATION FROM DATABASE
+useEffect(()=>{
+
+async function getRotation(){
+
+const {data}=await supabase
+.from("rotations")
+.select("*")
+.order("meeting_date",{ascending:true})
+.limit(1)
+.single()
+
+setRotation(data)
+
+}
+
+getRotation()
+
+},[])
+
+
+// COUNTDOWN TIMER
+useEffect(()=>{
+
+if(!rotation) return
+
+const timer=setInterval(()=>{
+
+const now=new Date()
+const meeting=new Date(rotation.meeting_date)
+
+const diff=meeting-now
+
+if(diff<=0){
+setTimeLeft("Meeting Today")
+return
+}
+
+const days=Math.floor(diff/(1000*60*60*24))
+const hours=Math.floor((diff/(1000*60*60))%24)
+const minutes=Math.floor((diff/(1000*60))%60)
+
+setTimeLeft(`${days} days ${hours} hours ${minutes} minutes remaining`)
+
+},1000)
+
+return ()=>clearInterval(timer)
+
+},[rotation])
+
+
+
+return (
+
+<div className="relative w-full h-screen overflow-hidden text-white">
+
+{/* PARALLAX BACKGROUND */}
+
+<div id="parallax" className="absolute inset-0">
+
+{images.map((img,i)=>(
+
+<div
+key={i}
+className={`absolute inset-0 transition-opacity duration-[2000ms] ${index===i?"opacity-100":"opacity-0"}`}
+>
+
+<img
+src={img}
+className="w-full h-full object-contain"
+/>
+
+</div>
+
+))}
+
+</div>
+
+
+{/* DARK OVERLAY */}
+
+<div className="absolute inset-0 bg-black/40"/>
+
+
+
+{/* CONTENT */}
+
+<div className="relative z-10 flex items-center justify-center h-full">
+
+<motion.div
+initial={{scale:0.9,opacity:0}}
+animate={{scale:1,opacity:1}}
+transition={{duration:1}}
+className="backdrop-blur-md bg-black/40 p-12 rounded-2xl text-center hover:bg-gradient-to-r hover:from-purple-600/70 hover:to-yellow-500/70 transition-all"
+>
+
+
+{/* 3D CHURCH ICON */}
+
+<motion.div
+animate={{rotateY:360}}
+transition={{repeat:Infinity,duration:6,ease:"linear"}}
+className="flex justify-center mb-6"
+>
+
+<Church size={80} className="text-yellow-400"/>
+
+</motion.div>
+
+
+<h1 className="text-6xl font-bold mb-6">
+
+Estifanos Mahaber
+
+</h1>
+
+<p className="text-2xl mb-4">
+
+Next Mahaber Meeting
+
+</p>
+
+<h2 className="text-4xl text-yellow-400 font-bold mb-4">
+
+{timeLeft}
+
+</h2>
+
+{rotation && (
+
+<p className="text-2xl">
+
+Host: {rotation.member_name}
+
+</p>
+
+)}
+
+<p className="text-xl mt-3">
+
+ዘካሪ
+
+</p>
+
+</motion.div>
+
+</div>
+
+</div>
+
+)
+
 }
