@@ -1,144 +1,106 @@
-'use client'
+"use client"
 
 import { useEffect, useState } from "react"
 import { supabase } from "../../lib/supabase"
 
-export default function PaymentsPage(){
+export default function PaymentsPage() {
 
-  const [members,setMembers] = useState([])
-  const [payments,setPayments] = useState([])
-  const [total,setTotal] = useState(0)
+  const [payments, setPayments] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  const months = [
-    "Jan","Feb","Mar","Apr","May","Jun",
-    "Jul","Aug","Sep","Oct","Nov","Dec"
-  ]
-
-  useEffect(()=>{
-    loadMembers()
+  useEffect(() => {
     loadPayments()
-  },[])
+  }, [])
 
-  async function loadMembers(){
+  async function loadPayments() {
 
-    const {data,error} = await supabase
-    .from("members")
-    .select("*")
-    .order("full_name")
+    const { data, error } = await supabase
+      .from("payments")
+      .select(`
+        id,
+        amount,
+        month,
+        members (
+          full_name,
+          phone
+        )
+      `)
+      .order("id", { ascending: false })
 
-    if(error) console.log(error)
+    if (error) {
+      console.log("ERROR:", error)
+      setPayments([])
+    } else {
+      setPayments(data || [])
+    }
 
-    setMembers(data)
+    setLoading(false)
   }
 
-  async function loadPayments(){
-
-    const {data,error} = await supabase
-    .from("payments")
-    .select("*")
-
-    if(error) console.log(error)
-
-    setPayments(data)
-
-    let sum = 0
-    data.forEach(p=> sum += p.amount)
-    setTotal(sum)
+  if (loading) {
+    return <div className="p-10">Loading...</div>
   }
 
-  function isPaid(memberId,month){
+  return (
+    <div className="p-10">
 
-    return payments.find(
-      p => p.member_id === memberId && p.month === month
-    )
-  }
+      <h1 className="text-3xl font-bold mb-6">
+        Payments
+      </h1>
 
-  async function pay(memberId,month){
+      <div className="overflow-x-auto bg-white rounded-lg shadow">
 
-    await supabase
-    .from("payments")
-    .insert({
-      member_id: memberId,
-      month: month,
-      amount:40
-    })
+        <table className="w-full text-left">
 
-    loadPayments()
-  }
+          <thead className="bg-gray-900 text-white">
+            <tr>
+              <th className="p-3">Name</th>
+              <th className="p-3">Phone</th>
+              <th className="p-3">Month</th>
+              <th className="p-3">Amount</th>
+            </tr>
+          </thead>
 
-  return(
+          <tbody>
 
-    <div style={{padding:"40px"}}>
+            {payments.length === 0 && (
+              <tr>
+                <td colSpan="4" className="p-4 text-center">
+                  No payments found
+                </td>
+              </tr>
+            )}
 
-      <h2>Mahaber Payments</h2>
+            {payments.map((p) => (
 
-      <p>Total Collected: {total} ETB</p>
+              <tr key={p.id} className="border-b">
 
-      <table border="1" cellPadding="10">
+                <td className="p-3">
+                  {p.members?.full_name || "N/A"}
+                </td>
 
-        <thead>
+                <td className="p-3">
+                  {p.members?.phone || "N/A"}
+                </td>
 
-          <tr>
-            <th>Name</th>
-            <th>Phone</th>
+                <td className="p-3">
+                  {p.month || "-"}
+                </td>
 
-            {months.map(m=>(
+                <td className="p-3">
+                  {p.amount ? `${p.amount} ETB` : "-"}
+                </td>
 
-              <th key={m}>{m}</th>
+              </tr>
 
             ))}
 
-          </tr>
+          </tbody>
 
-        </thead>
+        </table>
 
-        <tbody>
-
-          {members.map(member=>(
-
-            <tr key={member.id}>
-
-              <td>{member.full_name}</td>
-              <td>{member.phone}</td>
-
-              {months.map(month=>{
-
-                const paid = isPaid(member.id,month)
-
-                return(
-
-                  <td key={month}>
-
-                    {paid ? (
-
-                      <b>40</b>
-
-                    ) : (
-
-                      <button
-                        onClick={()=>pay(member.id,month)}
-                      >
-                        Pay 40
-                      </button>
-
-                    )}
-
-                  </td>
-
-                )
-
-              })}
-
-            </tr>
-
-          ))}
-
-        </tbody>
-
-      </table>
+      </div>
 
     </div>
-
   )
-
 }

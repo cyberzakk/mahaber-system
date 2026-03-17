@@ -1,75 +1,65 @@
 "use client"
 
-import { useEffect,useState } from "react"
+import { useEffect, useState } from "react"
 import { supabase } from "../../lib/supabase"
 
-export default function MemberPortal(){
+export default function MembersPage() {
 
-const [payments,setPayments]=useState([])
+  const [members, setMembers] = useState([])
 
-useEffect(()=>{
+  useEffect(() => {
+    loadMembers()
+  }, [])
 
-loadPayments()
+  async function loadMembers() {
+    const { data, error } = await supabase
+      .from("members")
+      .select("*")
 
-},[])
+    if (error) {
+      console.log(error)
+    } else {
+      setMembers(data || [])
+    }
+  }
 
-async function loadPayments(){
+  return (
+    <div className="p-10">
 
-const {data:user} = await supabase.auth.getUser()
+      <h1 className="text-3xl font-bold mb-6">
+        Members
+      </h1>
 
-const {data} = await supabase
-.from("payments")
-.select("*")
-.eq("member_id",user.user.id)
+      <table className="w-full bg-white shadow rounded">
 
-setPayments(data)
+        <thead className="bg-purple-700 text-white">
+          <tr>
+            <th className="p-3">Name</th>
+            <th className="p-3">Phone</th>
+          </tr>
+        </thead>
 
-}
+        <tbody>
 
-return(
+          {members.length === 0 && (
+            <tr>
+              <td colSpan="2" className="p-4 text-center">
+                No members found
+              </td>
+            </tr>
+          )}
 
-<div className="p-8">
+          {members.map((m) => (
+            <tr key={m.id} className="border-b">
+              <td className="p-3">{m.full_name}</td>
+              <td className="p-3">{m.phone}</td>
+            </tr>
+          ))}
 
-<h1 className="text-2xl font-bold mb-6">
+        </tbody>
 
-My Payments
+      </table>
 
-</h1>
-
-<table className="w-full border">
-
-<thead>
-
-<tr className="bg-gray-200">
-
-<th className="p-3">Month</th>
-<th className="p-3">Amount</th>
-<th className="p-3">Date</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-{payments.map(p=>(
-
-<tr key={p.id}>
-
-<td className="p-3">{p.month}</td>
-<td className="p-3">{p.amount}</td>
-<td className="p-3">{p.paid_at}</td>
-
-</tr>
-
-))}
-
-</tbody>
-
-</table>
-
-</div>
-
-)
-
+    </div>
+  )
 }
