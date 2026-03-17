@@ -6,21 +6,39 @@ import { supabase } from "../../lib/supabase"
 export default function MembersPage() {
 
   const [members, setMembers] = useState([])
+  const [name, setName] = useState("")
+  const [phone, setPhone] = useState("")
 
   useEffect(() => {
     loadMembers()
   }, [])
 
   async function loadMembers() {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("members")
       .select("*")
 
-    if (error) {
-      console.log(error)
-    } else {
-      setMembers(data || [])
+    setMembers(data || [])
+  }
+
+  async function addMember() {
+
+    if (!name || !phone) {
+      alert("Fill all fields")
+      return
     }
+
+    await supabase.from("members").insert([
+      {
+        full_name: name,
+        phone: phone
+      }
+    ])
+
+    setName("")
+    setPhone("")
+
+    loadMembers()
   }
 
   return (
@@ -30,6 +48,33 @@ export default function MembersPage() {
         Members
       </h1>
 
+      {/* ADD FORM */}
+      <div className="mb-6 bg-white p-4 rounded shadow">
+
+        <input
+          placeholder="Full Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="border p-2 mr-2"
+        />
+
+        <input
+          placeholder="Phone"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          className="border p-2 mr-2"
+        />
+
+        <button
+          onClick={addMember}
+          className="bg-purple-700 text-white px-4 py-2 rounded"
+        >
+          Add Member
+        </button>
+
+      </div>
+
+      {/* TABLE */}
       <table className="w-full bg-white shadow rounded">
 
         <thead className="bg-purple-700 text-white">
