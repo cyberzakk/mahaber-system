@@ -14,14 +14,12 @@ export default function MembersPage() {
   }, [])
 
   async function loadMembers() {
-
     const { data, error } = await supabase
       .from("members")
       .select("*")
 
     if (error) {
-      console.log("LOAD ERROR:", error)
-      alert("Error loading members")
+      console.log(error)
       return
     }
 
@@ -45,15 +43,31 @@ export default function MembersPage() {
       ])
 
     if (error) {
-      console.log("INSERT ERROR:", error)
-      alert("❌ Failed to add member")
+      alert("Error adding member")
       return
     }
 
-    alert("✅ Member Added")
-
     setName("")
     setPhone("")
+    loadMembers()
+  }
+
+  // ✅ DELETE FUNCTION
+  async function deleteMember(id) {
+
+    const confirmDelete = confirm("Are you sure you want to delete?")
+
+    if (!confirmDelete) return
+
+    const { error } = await supabase
+      .from("members")
+      .delete()
+      .eq("id", id)
+
+    if (error) {
+      alert("Delete failed")
+      return
+    }
 
     loadMembers()
   }
@@ -65,20 +79,21 @@ export default function MembersPage() {
         👥 Members
       </h1>
 
+      {/* FORM */}
       <div className="mb-8 bg-white p-6 rounded-2xl shadow-lg flex flex-wrap gap-4 items-center">
 
         <input
           placeholder="Enter Full Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="border border-purple-300 p-3 rounded-lg w-64 text-black placeholder-gray-500"
+          className="border p-3 rounded-lg w-64 text-black"
         />
 
         <input
           placeholder="Enter Phone"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          className="border border-purple-300 p-3 rounded-lg w-64 text-black placeholder-gray-500"
+          className="border p-3 rounded-lg w-64 text-black"
         />
 
         <button
@@ -90,6 +105,7 @@ export default function MembersPage() {
 
       </div>
 
+      {/* TABLE */}
       <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
 
         <table className="w-full text-left">
@@ -98,6 +114,7 @@ export default function MembersPage() {
             <tr>
               <th className="p-4">Name</th>
               <th className="p-4">Phone</th>
+              <th className="p-4">Action</th>
             </tr>
           </thead>
 
@@ -105,7 +122,7 @@ export default function MembersPage() {
 
             {members.length === 0 && (
               <tr>
-                <td colSpan="2" className="p-6 text-center text-gray-500">
+                <td colSpan="3" className="p-6 text-center text-gray-500">
                   🚫 No members found
                 </td>
               </tr>
@@ -115,6 +132,17 @@ export default function MembersPage() {
               <tr key={m.id} className="border-b">
                 <td className="p-4 text-black">{m.full_name}</td>
                 <td className="p-4 text-black">{m.phone}</td>
+
+                {/* DELETE BUTTON */}
+                <td className="p-4">
+                  <button
+                    onClick={() => deleteMember(m.id)}
+                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+                  >
+                    🗑 Delete
+                  </button>
+                </td>
+
               </tr>
             ))}
 
