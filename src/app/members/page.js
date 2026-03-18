@@ -56,14 +56,18 @@ export default function MembersPage() {
           placeholder="Enter Full Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="border border-purple-300 p-3 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="border border-purple-300 p-3 rounded-lg w-64 
+                     bg-white text-gray-900 placeholder-gray-400
+                     focus:outline-none focus:ring-2 focus:ring-purple-500"
         />
 
         <input
           placeholder="Enter Phone"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          className="border border-purple-300 p-3 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="border border-purple-300 p-3 rounded-lg w-64 
+                     bg-white text-gray-900 placeholder-gray-400
+                     focus:outline-none focus:ring-2 focus:ring-purple-500"
         />
 
         <button
