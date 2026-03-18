@@ -42,68 +42,80 @@ export default function MembersPage() {
   }
 
   return (
-    <div className="p-10">
+    <div className="min-h-screen bg-gradient-to-br from-purple-100 to-purple-300 p-10">
 
-      <h1 className="text-3xl font-bold mb-6">
-        Members
+      {/* TITLE */}
+      <h1 className="text-4xl font-bold mb-8 text-purple-900">
+        👥 Members
       </h1>
 
-      {/* ADD FORM */}
-      <div className="mb-6 bg-white p-4 rounded shadow">
+      {/* FORM CARD */}
+      <div className="mb-8 bg-white p-6 rounded-2xl shadow-lg flex flex-wrap gap-4 items-center">
 
         <input
-          placeholder="Full Name"
+          placeholder="Enter Full Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="border p-2 mr-2"
+          className="border border-purple-300 p-3 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-purple-500"
         />
 
         <input
-          placeholder="Phone"
+          placeholder="Enter Phone"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          className="border p-2 mr-2"
+          className="border border-purple-300 p-3 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-purple-500"
         />
 
         <button
           onClick={addMember}
-          className="bg-purple-700 text-white px-4 py-2 rounded"
+          className="bg-purple-700 hover:bg-purple-800 text-white px-6 py-3 rounded-lg font-semibold shadow-md transition"
         >
-          Add Member
+          ➕ Add Member
         </button>
 
       </div>
 
-      {/* TABLE */}
-      <table className="w-full bg-white shadow rounded">
+      {/* TABLE CARD */}
+      <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
 
-        <thead className="bg-purple-700 text-white">
-          <tr>
-            <th className="p-3">Name</th>
-            <th className="p-3">Phone</th>
-          </tr>
-        </thead>
+        <table className="w-full text-left">
 
-        <tbody>
-
-          {members.length === 0 && (
+          <thead className="bg-gradient-to-r from-purple-700 to-purple-900 text-white">
             <tr>
-              <td colSpan="2" className="p-4 text-center">
-                No members found
-              </td>
+              <th className="p-4 text-lg">Name</th>
+              <th className="p-4 text-lg">Phone</th>
             </tr>
-          )}
+          </thead>
 
-          {members.map((m) => (
-            <tr key={m.id} className="border-b">
-              <td className="p-3">{m.full_name}</td>
-              <td className="p-3">{m.phone}</td>
-            </tr>
-          ))}
+          <tbody>
 
-        </tbody>
+            {members.length === 0 && (
+              <tr>
+                <td colSpan="2" className="p-6 text-center text-gray-500 text-lg">
+                  🚫 No members found
+                </td>
+              </tr>
+            )}
 
-      </table>
+            {members.map((m) => (
+              <tr
+                key={m.id}
+                className="border-b hover:bg-purple-50 transition"
+              >
+                <td className="p-4 font-medium text-gray-800">
+                  {m.full_name}
+                </td>
+                <td className="p-4 text-gray-700">
+                  {m.phone}
+                </td>
+              </tr>
+            ))}
+
+          </tbody>
+
+        </table>
+
+      </div>
 
     </div>
   )

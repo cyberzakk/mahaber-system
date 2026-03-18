@@ -18,42 +18,28 @@ const [timeLeft,setTimeLeft]=useState("")
 
 // IMAGE SLIDE
 useEffect(()=>{
-
 const interval=setInterval(()=>{
 setIndex(prev => (prev+1)%images.length)
 },5000)
-
 return ()=>clearInterval(interval)
-
 },[])
 
-
-// PARALLAX EFFECT
+// PARALLAX
 useEffect(()=>{
-
 const handleScroll=()=>{
-
 const offset=window.scrollY
 const bg=document.getElementById("parallax")
-
 if(bg){
-bg.style.transform=`translateY(${offset*0.3}px)`
+bg.style.transform=`translateY(${offset*0.2}px)`
 }
-
 }
-
 window.addEventListener("scroll",handleScroll)
-
 return ()=>window.removeEventListener("scroll",handleScroll)
-
 },[])
 
-
-// LOAD ROTATION FROM DATABASE
+// LOAD ROTATION
 useEffect(()=>{
-
 async function getRotation(){
-
 const {data}=await supabase
 .from("rotations")
 .select("*")
@@ -62,24 +48,18 @@ const {data}=await supabase
 .single()
 
 setRotation(data)
-
 }
-
 getRotation()
-
 },[])
 
-
-// COUNTDOWN TIMER
+// TIMER
 useEffect(()=>{
-
 if(!rotation) return
 
 const timer=setInterval(()=>{
 
 const now=new Date()
 const meeting=new Date(rotation.meeting_date)
-
 const diff=meeting-now
 
 if(diff<=0){
@@ -91,7 +71,7 @@ const days=Math.floor(diff/(1000*60*60*24))
 const hours=Math.floor((diff/(1000*60*60))%24)
 const minutes=Math.floor((diff/(1000*60))%60)
 
-setTimeLeft(`${days} days ${hours} hours ${minutes} minutes remaining`)
+setTimeLeft(`${days}d ${hours}h ${minutes}m remaining`)
 
 },1000)
 
@@ -99,106 +79,144 @@ return ()=>clearInterval(timer)
 
 },[rotation])
 
-
-
 return (
 
-<div className="relative w-full h-screen overflow-hidden text-white">
+<div className="w-full text-white">
 
-{/* PARALLAX BACKGROUND */}
+{/* HERO SECTION */}
+<div className="relative w-full h-[90vh] overflow-hidden">
 
+{/* BACKGROUND */}
 <div id="parallax" className="absolute inset-0">
 
-{images.map((img,i)=>(
-
+{images.map((img,i)=(
 <div
 key={i}
 className={`absolute inset-0 transition-opacity duration-[2000ms] ${index===i?"opacity-100":"opacity-0"}`}
 >
-
 <img
 src={img}
-className="w-full h-full object-contain"
+className="w-full h-full object-cover"
 />
-
 </div>
-
 ))}
 
 </div>
 
-
-{/* DARK OVERLAY */}
-
-<div className="absolute inset-0 bg-black/40"/>
-
-
+{/* OVERLAY */}
+<div className="absolute inset-0 bg-black/50"/>
 
 {/* CONTENT */}
-
 <div className="relative z-10 flex items-center justify-center h-full">
 
 <motion.div
 initial={{scale:0.9,opacity:0}}
 animate={{scale:1,opacity:1}}
 transition={{duration:1}}
-className="backdrop-blur-md bg-black/40 p-12 rounded-2xl text-center hover:bg-gradient-to-r hover:from-purple-600/70 hover:to-yellow-500/70 transition-all"
+className="backdrop-blur-md bg-black/30 px-8 py-6 rounded-xl text-center max-w-md w-full shadow-xl hover:bg-gradient-to-r hover:from-purple-600/60 hover:to-yellow-500/60 transition-all"
 >
 
-
-{/* 3D CHURCH ICON */}
-
+{/* ICON */}
 <motion.div
 animate={{rotateY:360}}
 transition={{repeat:Infinity,duration:6,ease:"linear"}}
-className="flex justify-center mb-6"
+className="flex justify-center mb-4"
 >
-
-<Church size={80} className="text-yellow-400"/>
-
+<Church size={50} className="text-yellow-400"/>
 </motion.div>
 
-
-<h1 className="text-6xl font-bold mb-6">
-
+<h1 className="text-3xl md:text-4xl font-bold mb-2">
 Estifanos Mahaber
-
 </h1>
 
-<p className="text-2xl mb-4">
-
+<p className="text-lg mb-2">
 Next Mahaber Meeting
-
 </p>
 
-<h2 className="text-4xl text-yellow-400 font-bold mb-4">
-
+<h2 className="text-2xl text-yellow-400 font-bold mb-2">
 {timeLeft}
-
 </h2>
 
 {rotation && (
-
-<p className="text-2xl">
-
+<p className="text-lg">
 Host: {rotation.member_name}
-
 </p>
-
 )}
 
-<p className="text-xl mt-3">
-
+<p className="text-md mt-2">
 ዘካሪ
-
 </p>
 
 </motion.div>
+
+</div>
+
+</div>
+
+{/* ========================= */}
+{/* 📜 HISTORY SECTION */}
+{/* ========================= */}
+
+<div className="bg-gray-100 text-gray-800 py-16 px-6 md:px-20">
+
+<h1 className="text-3xl md:text-4xl font-bold mb-10 text-center">
+📜 የቅዱስ እስጢፋኖስ ታሪክ
+</h1>
+
+<div className="max-w-4xl mx-auto space-y-8 leading-relaxed text-lg">
+
+<p>
+ይህ የቀረበው ታሪክ መሠረታዊ ሃሳቡ ትክክል ቢሆንም፣ ለድረ-ገጽ በሚሆን መልኩ ይበልጥ ማራኪ እና በቋንቋ የተመጠነ ነው።
+</p>
+
+<h2 className="text-2xl font-semibold">
+ቅዱስ እስጢፋኖስ (ቀዳሜ ሰማዕት)
+</h2>
+
+<p>
+ቅዱስ እስጢፋኖስ በክርስትና ታሪክ ውስጥ ለእምነቱ ነፍሱን የሰጠ የመጀመሪያ ሰማዕት ነው።
+</p>
+
+<h2 className="text-xl font-semibold">
+እንዴት ተገደለ?
+</h2>
+
+<p>
+በድንጋይ ተወግሮ ነበር፤ በሐሰት ምስክሮች ተከስቶ ከከተማ ውጭ ተገደለ።
+</p>
+
+<h2 className="text-xl font-semibold">
+የት ተገደለ?
+</h2>
+
+<p>
+በኢየሩሳሌም ከተማ አካባቢ በሚገኘው የአንበሶች በር ነው።
+</p>
+
+<h2 className="text-xl font-semibold">
+ለምን ተገደለ?
+</h2>
+
+<ul className="list-disc pl-6">
+<li>እውነትን ስለተናገረ</li>
+<li>በክርስቶስ ላይ እምነቱን ስለጠነከረ</li>
+<li>በሐሰት ክስ ስለተያዘ</li>
+</ul>
+
+<h2 className="text-xl font-semibold">
+የመጨረሻ ቃላቱ
+</h2>
+
+<p>
+“ጌታ ኢየሱስ ሆይ፥ ነፍሴን ተቀበል።”  
+“ይህን ኃጢአት አትቁጠርባቸው።”
+</p>
+
+</div>
 
 </div>
 
 </div>
 
 )
-
 }
