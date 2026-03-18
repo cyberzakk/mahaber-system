@@ -14,7 +14,7 @@ export default function PaymentsPage() {
 
   async function loadPayments() {
 
-    // Fix: include member_id to ensure relation works
+    // Fix: include member_id to make the relation work
     const { data, error } = await supabase
       .from("payments")
       .select(`
@@ -52,7 +52,7 @@ export default function PaymentsPage() {
 
       <div className="overflow-x-auto bg-white rounded-lg shadow border border-gray-300">
 
-        {/* Remove nested table */}
+        {/* Fixed: removed nested table */}
         <table className="w-full text-left border-collapse">
 
           <thead className="bg-gray-900 text-white">
@@ -64,8 +64,7 @@ export default function PaymentsPage() {
             </tr>
           </thead>
 
-          <tbody>
-
+          <tbody className="text-gray-900"> {/* Make table text visible */}
             {payments.length === 0 && (
               <tr>
                 <td colSpan="4" className="p-4 text-center text-gray-500">
