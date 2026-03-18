@@ -14,12 +14,14 @@ export default function PaymentsPage() {
 
   async function loadPayments() {
 
+    // Fix: include member_id to ensure relation works
     const { data, error } = await supabase
       .from("payments")
       .select(`
         id,
         amount,
         month,
+        member_id,
         members (
           full_name,
           phone
@@ -48,16 +50,17 @@ export default function PaymentsPage() {
         Payments
       </h1>
 
-      <div className="overflow-x-auto bg-white rounded-lg shadow">
+      <div className="overflow-x-auto bg-white rounded-lg shadow border border-gray-300">
 
-        <table className="w-full text-left">
+        {/* Remove nested table */}
+        <table className="w-full text-left border-collapse">
 
           <thead className="bg-gray-900 text-white">
             <tr>
-              <th className="p-3">Name</th>
-              <th className="p-3">Phone</th>
-              <th className="p-3">Month</th>
-              <th className="p-3">Amount</th>
+              <th className="p-3 border-b border-gray-700">Name</th>
+              <th className="p-3 border-b border-gray-700">Phone</th>
+              <th className="p-3 border-b border-gray-700">Month</th>
+              <th className="p-3 border-b border-gray-700">Amount</th>
             </tr>
           </thead>
 
@@ -65,7 +68,7 @@ export default function PaymentsPage() {
 
             {payments.length === 0 && (
               <tr>
-                <td colSpan="4" className="p-4 text-center">
+                <td colSpan="4" className="p-4 text-center text-gray-500">
                   No payments found
                 </td>
               </tr>
@@ -73,7 +76,7 @@ export default function PaymentsPage() {
 
             {payments.map((p) => (
 
-              <tr key={p.id} className="border-b">
+              <tr key={p.id} className="border-b border-gray-200">
 
                 <td className="p-3">
                   {p.members?.full_name || "N/A"}
