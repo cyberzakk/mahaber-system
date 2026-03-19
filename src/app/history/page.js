@@ -19,6 +19,7 @@ export default function PaymentHistory() {
         id,
         amount,
         month,
+        member_id,
         members (
           full_name,
           phone
@@ -31,7 +32,7 @@ export default function PaymentHistory() {
       return
     }
 
-    setPayments(data)
+    setPayments(data || [])
   }
 
   return(
@@ -40,32 +41,46 @@ export default function PaymentHistory() {
       padding:"40px",
       fontFamily:"Arial",
       background:"#f5f6fa",
-      minHeight:"100vh"
+      minHeight:"100vh",
+      color:"#111"   // ✅ FIX: force visible text
     }}>
 
-      <h1 style={{marginBottom:"30px"}}>Payment History</h1>
+      {/* TITLE */}
+      <h1 style={{
+        marginBottom:"30px",
+        color:"#111"   // ✅ FIX
+      }}>
+        Payment History
+      </h1>
 
+      {/* CARD */}
       <div style={{
-        background:"#fff",
+        background:"#ffffff",
         padding:"20px",
         borderRadius:"8px",
-        boxShadow:"0 2px 10px rgba(0,0,0,0.08)"
+        boxShadow:"0 2px 10px rgba(0,0,0,0.08)",
+        overflowX:"auto"   // ✅ scroll if needed
       }}>
 
         <table style={{
           width:"100%",
           borderCollapse:"collapse",
-          textAlign:"center"
+          textAlign:"center",
+          minWidth:"600px",
+          color:"#111"   // ✅ FIX
         }}>
 
           <thead>
 
-            <tr style={{background:"#111",color:"#fff"}}>
+            <tr style={{
+              background:"#111",
+              color:"#fff"
+            }}>
 
-              <th style={{padding:"10px"}}>Member</th>
-              <th style={{padding:"10px"}}>Phone</th>
-              <th style={{padding:"10px"}}>Month</th>
-              <th style={{padding:"10px"}}>Amount</th>
+              <th style={{padding:"12px",border:"1px solid #444"}}>Member</th>
+              <th style={{padding:"12px",border:"1px solid #444"}}>Phone</th>
+              <th style={{padding:"12px",border:"1px solid #444"}}>Month</th>
+              <th style={{padding:"12px",border:"1px solid #444"}}>Amount</th>
 
             </tr>
 
@@ -75,31 +90,52 @@ export default function PaymentHistory() {
 
             {payments.length === 0 && (
               <tr>
-                <td colSpan="4" style={{padding:"20px"}}>
+                <td colSpan="4" style={{
+                  padding:"20px",
+                  color:"#555"
+                }}>
                   No payments yet
                 </td>
               </tr>
             )}
 
-            {payments.map(p=>(
-              <tr key={p.id}>
+            {payments.map((p,index)=>(
+              <tr
+                key={p.id}
+                style={{
+                  background: index % 2 === 0 ? "#fff" : "#f9f9f9"
+                }}
+              >
 
-                <td style={{border:"1px solid #ddd",padding:"8px"}}>
-                  {p.members?.full_name}
+                <td style={{
+                  border:"1px solid #ddd",
+                  padding:"10px",
+                  color:"#111"
+                }}>
+                  {p.members?.full_name || "N/A"}
                 </td>
 
-                <td style={{border:"1px solid #ddd",padding:"8px"}}>
-                  {p.members?.phone}
+                <td style={{
+                  border:"1px solid #ddd",
+                  padding:"10px",
+                  color:"#111"
+                }}>
+                  {p.members?.phone || "N/A"}
                 </td>
 
-                <td style={{border:"1px solid #ddd",padding:"8px"}}>
+                <td style={{
+                  border:"1px solid #ddd",
+                  padding:"10px",
+                  color:"#111"
+                }}>
                   {p.month}
                 </td>
 
                 <td style={{
                   border:"1px solid #ddd",
-                  padding:"8px",
-                  fontWeight:"bold"
+                  padding:"10px",
+                  fontWeight:"bold",
+                  color:"#16a34a"   // ✅ green amount
                 }}>
                   {p.amount} ETB
                 </td>
