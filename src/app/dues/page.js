@@ -14,6 +14,8 @@ export default function DuesPage(){
     "ግንቦት","ሰኔ","ሐምሌ","ነሐሴ"
   ]
 
+  const PRICE_PER_MONTH = 40  // ✅ 40 ETB per month
+
   useEffect(()=>{
     loadMembers()
     loadPayments()
@@ -49,69 +51,115 @@ export default function DuesPage(){
 
   return(
 
-    <div className="p-6 text-gray-900">
+    <div style={{
+      padding:"30px",
+      background:"#f5f6fa",
+      minHeight:"100vh",
+      color:"#111"
+    }}>
 
       {/* TITLE */}
-      <h2 className="text-3xl font-bold mb-6">
-        All Members Unpaid Months
+      <h2 style={{
+        fontSize:"28px",
+        fontWeight:"bold",
+        marginBottom:"20px",
+        color:"#1e293b"
+      }}>
+        💰 Members Dues Overview
       </h2>
 
-      {/* CARD */}
-      <div className="bg-white rounded-lg shadow border overflow-x-auto">
+      {/* TABLE CONTAINER */}
+      <div style={{
+        background:"#fff",
+        borderRadius:"10px",
+        boxShadow:"0 4px 10px rgba(0,0,0,0.08)",
+        overflowX:"auto"
+      }}>
 
-        <table className="min-w-[900px] w-full border-collapse text-sm">
+        <table style={{
+          width:"100%",
+          borderCollapse:"collapse",
+          minWidth:"800px"
+        }}>
 
           {/* HEADER */}
-          <thead className="bg-gray-800 text-white">
-            <tr>
-              <th className="p-3 border">Name</th>
-              <th className="p-3 border">Phone</th>
-              <th className="p-3 border">Unpaid Months</th>
-              <th className="p-3 border">Debt</th>
+          <thead>
+
+            <tr style={{
+              background:"#0f172a",
+              color:"#fff",
+              fontWeight:"bold"
+            }}>
+              <th style={th}>Name</th>
+              <th style={th}>Phone</th>
+              <th style={th}>Unpaid Months</th>
+              <th style={th}>Debt (ETB)</th>
             </tr>
+
           </thead>
 
           {/* BODY */}
           <tbody>
 
-            {members.map((member, index)=>{
+            {members.map((member,index)=>{
 
               const u = unpaid(member.id)
-              const debt = u.length * 40
+
+              // ✅ Calculate debt clearly
+              const debt = u.length * PRICE_PER_MONTH
 
               return(
 
-                <tr
-                  key={member.id}
-                  className={`border ${
-                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                  }`}
-                >
+                <tr key={member.id} style={{
+                  background: index % 2 === 0 ? "#ffffff" : "#f1f5f9"
+                }}>
 
                   {/* NAME */}
-                  <td className="p-3 border font-medium">
+                  <td style={{
+                    ...td,
+                    fontWeight:"bold",
+                    color:"#0f172a"
+                  }}>
                     {member.full_name}
                   </td>
 
                   {/* PHONE */}
-                  <td className="p-3 border">
+                  <td style={{
+                    ...td,
+                    fontWeight:"bold",
+                    color:"#334155"
+                  }}>
                     {member.phone}
                   </td>
 
                   {/* UNPAID MONTHS */}
-                  <td className="p-3 border">
+                  <td style={td}>
 
                     {u.length === 0 ? (
-                      <span className="text-green-600 font-semibold">
+                      <span style={{
+                        color:"#16a34a",
+                        fontWeight:"bold"
+                      }}>
                         ✔ All Paid
                       </span>
                     ) : (
-                      <div className="flex flex-wrap gap-2">
+                      <div style={{
+                        display:"flex",
+                        flexWrap:"wrap",
+                        gap:"6px"
+                      }}>
 
                         {u.map((m,i)=>(
                           <span
                             key={i}
-                            className="bg-red-100 text-red-700 px-2 py-1 rounded text-xs"
+                            style={{
+                              background:"#fee2e2",
+                              color:"#b91c1c",
+                              padding:"4px 8px",
+                              borderRadius:"5px",
+                              fontSize:"12px",
+                              fontWeight:"bold"
+                            }}
                           >
                             {m}
                           </span>
@@ -123,14 +171,18 @@ export default function DuesPage(){
                   </td>
 
                   {/* DEBT */}
-                  <td className="p-3 border font-bold">
+                  <td style={{
+                    ...td,
+                    fontWeight:"bold",
+                    fontSize:"16px"
+                  }}>
 
                     {debt === 0 ? (
-                      <span className="text-green-600">
+                      <span style={{color:"#16a34a"}}>
                         0 ETB
                       </span>
                     ) : (
-                      <span className="text-red-600">
+                      <span style={{color:"#dc2626"}}>
                         {debt} ETB
                       </span>
                     )}
@@ -145,7 +197,11 @@ export default function DuesPage(){
 
             {members.length === 0 && (
               <tr>
-                <td colSpan="4" className="p-4 text-center text-gray-500">
+                <td colSpan="4" style={{
+                  padding:"20px",
+                  textAlign:"center",
+                  color:"#555"
+                }}>
                   No members found
                 </td>
               </tr>
@@ -161,4 +217,15 @@ export default function DuesPage(){
 
   )
 
+}
+
+/* STYLES */
+const th = {
+  padding:"12px",
+  border:"1px solid #1e293b"
+}
+
+const td = {
+  padding:"10px",
+  border:"1px solid #e5e7eb"
 }
