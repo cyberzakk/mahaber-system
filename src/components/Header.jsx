@@ -22,7 +22,7 @@ export default function Header(){
 
           <Link href="/payments">Payments</Link>
 
-          <Link href="/dues">Dues</Link>
+         
 
           <Link href="/history">History</Link>
 
